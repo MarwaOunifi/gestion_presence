@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">gestion_presence</string>
+    <string name="nombre_de_jours">Nombre de jours</string>
+
+
+    <!-- Liste des types de présence -->
+    <string-array name="attendance_types">
+        <item>Par Heure</item>
+        <item>Par Jour</item>
+        <item>Par Mois</item>
+    </string-array>
+
 </resources>
