@@ -1,58 +1,75 @@
 package com.example.gestion_presence;
 
+
+
+import static androidx.core.content.ContextCompat.startActivity;
+
+import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
+import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    DatabaseHelper db;
-    ListView listView;
-    Button btnAddEmployee;
-    ArrayList<String> employeeList;
-    ArrayAdapter<String> adapter;
+
+    private EditText nomEmploye, posteEmploye, salaireHoraire;
+    private Button ajouterEmploye, voirListePresences;
+    private DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        db = new DatabaseHelper(this);
-        listView = findViewById(R.id.listView);
-        btnAddEmployee = findViewById(R.id.btnAddEmployee);
-        employeeList = new ArrayList<>();
+        nomEmploye = findViewById(R.id.nomEmploye);
+        posteEmploye = findViewById(R.id.posteEmploye);
+        salaireHoraire = findViewById(R.id.salaireHoraire);
+        ajouterEmploye = findViewById(R.id.ajouterEmploye);
+        voirListePresences = findViewById(R.id.voirListePresences);
 
-        loadEmployees();
+        dbHelper = new DatabaseHelper(this);
 
-        btnAddEmployee.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, AddEmployeeActivity.class);
-            startActivity(intent);
+        ajouterEmploye.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ajouterEmploye();
+            }
         });
 
-        listView.setOnItemClickListener((adapterView, view, i, l) -> {
-            Intent intent = new Intent(MainActivity.this, MarkAttendanceActivity.class);
-            intent.putExtra("employee_name", employeeList.get(i));
+        voirListePresences.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ListeEmployesActivity.class);
             startActivity(intent);
         });
     }
 
-    private void loadEmployees() {
-        Cursor cursor = db.getAllEmployees();
-        if (cursor.getCount() == 0) {
-            Toast.makeText(this, "Aucun employé trouvé", Toast.LENGTH_SHORT).show();
+    private void ajouterEmploye() {
+        String nom = nomEmploye.getText().toString().trim();
+        String poste = posteEmploye.getText().toString().trim();
+        String salaire = salaireHoraire.getText().toString().trim();
+
+        if (nom.isEmpty() || poste.isEmpty() || salaire.isEmpty()) {
+            Toast.makeText(this, "Veuillez remplir tous les champs", Toast.LENGTH_SHORT).show();
             return;
         }
-        while (cursor.moveToNext()) {
-            employeeList.add(cursor.getString(1));
+
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("nom", nom);
+        values.put("poste", poste);
+        values.put("salaire", Double.parseDouble(salaire));
+
+        long id = db.insert("employes", null, values);
+        if (id != -1) {
+            Toast.makeText(this, "Employé ajouté avec succès", Toast.LENGTH_SHORT).show();
+            nomEmploye.setText("");
+            posteEmploye.setText("");
+            salaireHoraire.setText("");
+        } else {
+            Toast.makeText(this, "Erreur lors de l'ajout", Toast.LENGTH_SHORT).show();
         }
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, employeeList);
-        listView.setAdapter(adapter);
     }
 }

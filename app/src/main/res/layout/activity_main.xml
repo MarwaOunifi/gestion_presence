@@ -1,28 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/white">
+
+    <EditText
+        android:id="@+id/nomEmploye"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nom de l'employé"
+        android:background="@android:drawable/edit_text" />
+
+    <EditText
+        android:id="@+id/posteEmploye"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Poste de l'employé"
+        android:background="@android:drawable/edit_text" />
+
+    <EditText
+        android:id="@+id/salaireHoraire"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Salaire horaire"
+        android:inputType="numberDecimal"
+        android:background="@android:drawable/edit_text" />
 
     <Button
-        android:id="@+id/btnAddEmployee"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Ajouter un employé"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-
-    <ListView
-        android:id="@+id/listViewEmployees"
+        android:id="@+id/ajouterEmploye"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/btnAddEmployee"
-        android:layout_marginTop="4dp" />
+        android:text="AJOUTER EMPLOYÉ"
+        android:backgroundTint="@color/gray"
+        android:textColor="@color/white" />
 
-    <ListView
-        android:id="@+id/listView"
+    <Button
+        android:id="@+id/voirListePresences"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        />
+        android:text="Voir la liste des présences"
+        android:backgroundTint="@color/dark_gray"
+        android:textColor="@color/white" />
 
-</RelativeLayout>
+</LinearLayout>

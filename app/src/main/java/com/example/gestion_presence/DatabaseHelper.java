@@ -6,8 +6,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
-    private static final String DATABASE_NAME = "PresenceDB";
+
+    private static final String DATABASE_NAME = "employes.db";
     private static final int DATABASE_VERSION = 1;
 
     public DatabaseHelper(Context context) {
@@ -16,63 +20,60 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE Employees (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, salary REAL);");
-        db.execSQL("CREATE TABLE Attendance (id INTEGER PRIMARY KEY AUTOINCREMENT, employee_id INTEGER, type TEXT, days INTEGER, hours INTEGER, FOREIGN KEY(employee_id) REFERENCES Employees(id));");
-        db.execSQL("CREATE TABLE Admin (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT);");
+        String createTable = "CREATE TABLE employes (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "nom TEXT NOT NULL, " +
+                "poste TEXT NOT NULL, " +
+                "salaire REAL NOT NULL)";
+        db.execSQL(createTable);
+        String crateTablePresence = "CREATE TABLE presences (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT ," +
+                " employe_id INTEGER ," +
+                "date TEXT , " +
+                "presence INTEGER,FOREIGN KEY (employe_id) REFERENCES employes(id))";
+        db.execSQL(crateTablePresence);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS Employees");
-        db.execSQL("DROP TABLE IF EXISTS Attendance");
-        db.execSQL("DROP TABLE IF EXISTS Admin");
+        db.execSQL("DROP TABLE IF EXISTS employes");
         onCreate(db);
     }
 
-    public boolean addEmployee(String name, double salary) {
+    public void marquerPresence(int employeId, boolean present) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put("name", name);
-        values.put("salary", salary);
-        long result = db.insert("Employees", null, values);
-        return result != -1;
+        values.put("employe_id", employeId);
+        values.put("date", System.currentTimeMillis()); // Date actuelle
+        values.put("presence", present ? 1 : 0);
+
+        db.insert("presences", null, values);
+        db.close();
     }
 
-    public Cursor getAllEmployees() {
+    public List<Employe> getAllEmployes() {
+        List<Employe> employeList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        return db.rawQuery("SELECT * FROM Employees", null);
-    }
+        Cursor cursor = db.rawQuery("SELECT * FROM employes", null);
 
-    public boolean markAttendance(int employeeId, String type, int days, int hours) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("employee_id", employeeId);
-        values.put("type", type);
-        values.put("days", days);
-        values.put("hours", hours);
-        long result = db.insert("Attendance", null, values);
-        return result != -1;
-    }
-
-    public Cursor getAttendance(int employeeId) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        return db.rawQuery("SELECT * FROM Attendance WHERE employee_id = ?", new String[]{String.valueOf(employeeId)});
-    }
-
-    public boolean addAdmin(String username, String password) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("username", username);
-        values.put("password", password);
-        long result = db.insert("Admin", null, values);
-        return result != -1;
-    }
-
-    public boolean checkAdminLogin(String username, String password) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM Admin WHERE username = ? AND password = ?", new String[]{username, password});
-        boolean exists = cursor.getCount() > 0;
+        if (cursor.moveToFirst()) {
+            do {
+                Employe employe = new Employe(
+                        cursor.getString(0),  // ID
+                        cursor.getString(1),  // Nom
+                        cursor.getDouble(2)   // Salaire
+                );
+                employeList.add(employe);
+            } while (cursor.moveToNext());
+        }
         cursor.close();
-        return exists;
+        db.close();
+        return employeList;
     }
+
+
+
+
 }
+
+

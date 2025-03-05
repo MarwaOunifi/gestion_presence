@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:background="@android:color/white">
+
+    <TextView
+        android:id="@+id/nomEmploye"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/posteEmploye"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/darker_gray" />
+
+    <TextView
+        android:id="@+id/salaireEmploye"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/holo_green_dark" />
+
+    <Button
+        android:id="@+id/btnPresence"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Présent" />
+
+    <Button
+        android:id="@+id/btnAbsence"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Absent" />
+</LinearLayout>
